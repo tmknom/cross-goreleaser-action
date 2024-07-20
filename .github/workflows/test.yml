@@ -14,13 +14,57 @@ defaults:
   run:
     shell: bash
 
+env:
+  DEFAULT_CONFIG_PATH: .goreleaser.yml
+
 jobs:
-  test:
-    name: Test
+  test-configuration-path:
+    name: Test for configuration-path
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      contents: read
+      contents: write
+    steps:
+      - name: Checkout
+        uses: tmknom/checkout-action@v1
+
+      - name: Setup
+        id: setup
+        run: |
+          set -x
+          rm -f "${DEFAULT_CONFIG_PATH}"
+
+          config="${RUNNER_TEMP}/.goreleaser.yml"
+          cat <<EOF >"${config}"
+          version: 2
+          builds:
+            - main: ./.github/fixtures/main.go
+              goos: [linux]
+          EOF
+          echo "path=${config}" >> "${GITHUB_OUTPUT}"
+
+      - name: Exercise
+        id: exercise
+        uses: ./
+        with:
+          configuration-path: ${{ steps.setup.outputs.path }}
+          dry-run: 'true'
+
+      - name: Verify
+        env:
+          CONFIGURATION_PATH: ${{ steps.exercise.outputs.configuration-path }}
+          CONFIGURATION_SHA256: ${{ steps.exercise.outputs.configuration-sha256 }}
+        run: |
+          set -x
+          test "${CONFIGURATION_PATH}" = "${RUNNER_TEMP}/.goreleaser.yml"
+          test "${CONFIGURATION_SHA256}" = "a459d888fcc3094e6046b6490b9ee3af0f36703f6a4dc0f05f111353f0177dca"
+
+  test-configuration-url:
+    name: Test for configuration-url
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: tmknom/checkout-action@v1
@@ -28,21 +72,86 @@ jobs:
       - name: Setup
         run: |
           set -x
-          echo "Setup"
+          rm -f "${DEFAULT_CONFIG_PATH}"
 
       - name: Exercise
         id: exercise
         uses: ./
+        with:
+          configuration-url: https://raw.githubusercontent.com/tmknom/cross-goreleaser-action/37a939a4421d377d7a6156214f0f42a83a73d673/.github/fixtures/test.yml
+          dry-run: 'true'
 
       - name: Verify
+        env:
+          CONFIGURATION_PATH: ${{ steps.exercise.outputs.configuration-path }}
+          CONFIGURATION_SHA256: ${{ steps.exercise.outputs.configuration-sha256 }}
+        run: |
+          set -x
+          [[ "${CONFIGURATION_PATH}" =~ "${RUNNER_TEMP}"/goreleaser-.*.yml ]]
+          test "${CONFIGURATION_SHA256}" = "a459d888fcc3094e6046b6490b9ee3af0f36703f6a4dc0f05f111353f0177dca"
+
+  test-omit:
+    name: Test for omit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: tmknom/checkout-action@v1
+
+      - name: Setup
+        run: |
+          set -x
+          cat <<EOF >"${DEFAULT_CONFIG_PATH}"
+          version: 2
+          builds:
+            - main: ./.github/fixtures/main.go
+              goos: [linux]
+          EOF
+
+      - name: Exercise
+        id: exercise
+        uses: ./
+        with:
+          dry-run: 'true'
+
+      - name: Verify
+        env:
+          CONFIGURATION_PATH: ${{ steps.exercise.outputs.configuration-path }}
+          CONFIGURATION_SHA256: ${{ steps.exercise.outputs.configuration-sha256 }}
+        run: |
+          set -x
+          test "${CONFIGURATION_PATH}" = ".goreleaser.yml"
+          test "${CONFIGURATION_SHA256}" = "a459d888fcc3094e6046b6490b9ee3af0f36703f6a4dc0f05f111353f0177dca"
+
+  test-error:
+    name: Test for error
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: tmknom/checkout-action@v1
+
+      - name: Setup
+        run: |
+          set -x
+          rm -f "${DEFAULT_CONFIG_PATH}"
+
+      - name: Exercise
+        id: exercise
+        uses: ./
+        with:
+          dry-run: 'true'
+        continue-on-error: true
+
+      - name: Verify
+        if: ${{ always() }}
         env:
           OUTCOME: ${{ steps.exercise.outcome }}
         run: |
           set -x
-          test "${OUTCOME}" = "success"
-
-      - name: Teardown
-        if: ${{ always() }}
-        run: |
-          set -x
-          echo "Teardown"
+          test "${OUTCOME}" = "failure"
