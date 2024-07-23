@@ -48,7 +48,7 @@ jobs:
         uses: ./
         with:
           configuration-path: ${{ steps.setup.outputs.path }}
-          dry-run: 'true'
+          dry-run: "true"
 
       - name: Verify
         env:
@@ -79,7 +79,7 @@ jobs:
         uses: ./
         with:
           configuration-url: https://raw.githubusercontent.com/tmknom/cross-goreleaser-action/37a939a4421d377d7a6156214f0f42a83a73d673/.github/fixtures/test.yml
-          dry-run: 'true'
+          dry-run: "true"
 
       - name: Verify
         env:
@@ -115,7 +115,7 @@ jobs:
         id: exercise
         uses: ./
         with:
-          dry-run: 'true'
+          dry-run: "true"
 
       - name: Verify
         env:
@@ -145,7 +145,7 @@ jobs:
         id: exercise
         uses: ./
         with:
-          dry-run: 'true'
+          dry-run: "true"
         continue-on-error: true
 
       - name: Verify
