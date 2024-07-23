@@ -35,7 +35,7 @@ inputs:
     required: false
     description: The path for the GoReleaser configurations.
   dry-run:
-    default: 'false'
+    default: "false"
     required: false
     description: Whether to use snapshot mode when invoking GoReleaser.
 
