@@ -45,8 +45,8 @@ Refer to the detailed configuration syntax for the GoReleaser in [goreleaser/gor
 
 | Name | Description |
 | :--- | :---------- |
+| configuration-digest | Digest of the configuration file that is in the form "algorithm:hex_digest" (e.g. `sha256:abc123...`). |
 | configuration-path | The path for the configuration file to passing goreleaser/goreleaser-action. |
-| configuration-sha256 | SHA256 of the configuration file to passing goreleaser/goreleaser-action. |
 
 <!-- actdocs end -->
 
