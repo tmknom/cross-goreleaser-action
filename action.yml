@@ -58,7 +58,7 @@ runs:
     # curl options
     #
     # --silent: Silent or quiet mode.
-    # --silent: When used with -s, --silent, it makes curl show an error message if it fails.
+    # --show-error: When used with -s, --silent, it makes curl show an error message if it fails.
     # --location: If the server reports that the requested page has moved to a different location, redo the request on the new place.
     # --output <file>: Write output to <file> instead of stdout.
     - name: Download configuration
