@@ -34,6 +34,14 @@ inputs:
   configuration-path:
     required: false
     description: The path for the GoReleaser configurations.
+  homebrew-tap-repository:
+    type: string
+    required: false
+    description: The repository for Homebrew formulae used to install tools on macOS.
+  homebrew-tap-github-token:
+    type: string
+    required: false
+    description: The GitHub Apps token for accessing the repository used by Homebrew formulae.
   dry-run:
     default: "false"
     required: false
@@ -137,6 +145,7 @@ runs:
       shell: bash
 
     - name: Run GoReleaser
+      if: ${{ inputs.homebrew-tap-repository == '' }}
       uses: goreleaser/goreleaser-action@9ed2f89a662bf1735a48bc8557fd212fa902bebf # v6.1.0
       with:
         distribution: goreleaser
@@ -144,3 +153,15 @@ runs:
         args: release --clean --config ${{ steps.config.outputs.path }} ${{ steps.dry-run.outputs.args }}
       env:
         GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Run GoReleaser with Homebrew
+      if: ${{ inputs.homebrew-tap-repository != '' }}
+      uses: goreleaser/goreleaser-action@9ed2f89a662bf1735a48bc8557fd212fa902bebf # v6.1.0
+      with:
+        distribution: goreleaser
+        version: ~> v2
+        args: release --clean --config ${{ steps.config.outputs.path }} ${{ steps.dry-run.outputs.args }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        HOMEBREW_TAP_REPOSITORY: ${{ inputs.homebrew-tap-repository }}
+        HOMEBREW_TAP_GITHUB_TOKEN: ${{ inputs.homebrew-tap-github-token }}
