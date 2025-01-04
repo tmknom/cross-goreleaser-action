@@ -270,6 +270,8 @@ jobs:
           "${secrets[@]}" PR_WRITER_APP_PRIVATE_KEY | jq -r '.static_version.value' > "${key_file}"
           echo "app-private-key-file=${key_file}" >> "${GITHUB_OUTPUT}"
 
+          rm "${GHA_HCP_CRED_FILE}" || true
+
       - name: Generate GitHub Token
         id: app
         uses: tmknom/generate-github-token-action@e0f9098bfea71c5b68642fcbd1c2e690932856b1 # v0.1.0
@@ -288,7 +290,6 @@ jobs:
           git tag "${version}"
           git push origin "${version}"
           echo "version=${version}" >> "${GITHUB_OUTPUT}"
-          rm "${GHA_HCP_CRED_FILE}"
 
       - name: Exercise
         id: exercise
