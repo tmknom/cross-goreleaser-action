@@ -52,10 +52,14 @@ jobs:
 
       - name: Verify
         env:
+          ARTIFACTS: ${{ steps.exercise.outputs.artifacts }}
+          METADATA: ${{ steps.exercise.outputs.metadata }}
           CONFIGURATION_PATH: ${{ steps.exercise.outputs.configuration-path }}
           CONFIGURATION_DIGEST: ${{ steps.exercise.outputs.configuration-digest }}
         run: |
           set -x
+          test "$(jq -r '.[] | select (.type=="Metadata") | .name' <<<"${ARTIFACTS}")" = "metadata.json"
+          test "$(jq -r '.project_name' <<<"${METADATA}")" = "cross-goreleaser-action"
           test "${CONFIGURATION_PATH}" = "${RUNNER_TEMP}/.goreleaser.yml"
           test "${CONFIGURATION_DIGEST}" = "sha256:a459d888fcc3094e6046b6490b9ee3af0f36703f6a4dc0f05f111353f0177dca"
 
