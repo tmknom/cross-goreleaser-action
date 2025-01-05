@@ -80,10 +80,6 @@ runs:
         echo "::endgroup::"
       shell: bash
 
-    - name: Traceable Identifier
-      id: traceable
-      uses: tmknom/traceable-identifier-action@6555160c543eb771a876fb4ceaecd43ec79df7b6 # v0.1.0
-
     # curl options
     #
     # --silent: Silent or quiet mode.
@@ -95,13 +91,12 @@ runs:
       if: ${{ inputs.configuration-url != '' }}
       working-directory: ${{ steps.work.outputs.dir }}
       env:
-        PREFIX: goreleaser
-        IDENTIFIER: ${{ steps.traceable.outputs.identifier }}
+        FILENAME: .goreleaser.yml
         CONFIGURATION_URL: ${{ inputs.configuration-url }}
       run: |
         echo "::group::Download configuration"
         set -x
-        config="${PWD}/${PREFIX}-${IDENTIFIER}.yml"
+        config="${PWD}/${FILENAME}"
         curl --silent --show-error --location --output "${config}" "${CONFIGURATION_URL}"
         echo "path=${config}" >> "${GITHUB_OUTPUT}"
         echo "::endgroup::"
