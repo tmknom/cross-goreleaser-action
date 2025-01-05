@@ -20,7 +20,7 @@ Refer to the detailed configuration syntax for the GoReleaser in [goreleaser/gor
     - name: Cross GoReleaser
       uses: tmknom/cross-goreleaser-action@v0
       with:
-        configuration-url: https://raw.githubusercontent.com/tmknom/configurations/main/goreleaser/cli.yml
+        configuration-url: https://raw.githubusercontent.com/tmknom/configurations/main/goreleaser/default.yml
 ```
 
 ### Configuration Path
