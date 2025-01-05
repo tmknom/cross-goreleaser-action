@@ -71,9 +71,5 @@ N/A
 
 See [GitHub Releases][releases].
 
-## License
-
-Apache 2 Licensed. See [LICENSE](LICENSE) for full details.
-
 [goreleaser]: https://github.com/goreleaser/goreleaser-action
 [releases]: https://github.com/tmknom/cross-goreleaser-action/releases
