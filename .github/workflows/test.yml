@@ -141,6 +141,8 @@ jobs:
     steps:
       - name: Checkout
         uses: tmknom/checkout-action@v1
+        with:
+          ref: ${{ github.event.pull_request.user.login == 'dependabot[bot]' && github.event.repository.default_branch || '' }}
 
       - name: Setup
         id: setup
