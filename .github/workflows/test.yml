@@ -26,7 +26,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: tmknom/checkout-action@v1
+        uses: tmknom/secure-checkout-action@v1
 
       - name: Setup
         id: setup
@@ -71,7 +71,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: tmknom/checkout-action@v1
+        uses: tmknom/secure-checkout-action@v1
 
       - name: Setup
         run: |
@@ -103,7 +103,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: tmknom/checkout-action@v1
+        uses: tmknom/secure-checkout-action@v1
 
       - name: Setup
         run: |
@@ -140,9 +140,10 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: tmknom/checkout-action@v1
+        uses: tmknom/secure-checkout-action@v1
         with:
-          ref: ${{ github.event.pull_request.user.login == 'dependabot[bot]' && github.event.repository.default_branch || '' }}
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: true
 
       - name: Setup
         id: setup
@@ -179,8 +180,6 @@ jobs:
 
       - name: Push tag
         id: tag
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -x
           version="v0.0.1-alpha-${GITHUB_SHA}"
@@ -228,7 +227,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: tmknom/checkout-action@v1
+        uses: tmknom/secure-checkout-action@v1
 
       - name: Setup
         run: |
